@@ -1,0 +1,584 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>かしこSNSスクール</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#F2E35A">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="かしこSNS">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<style>
+:root {
+  color-scheme: light;
+  --bg: #F5F6F9; --surface: #FFFFFF; --surface-2: #ECEEF4; --ink: #252736; --ink-2: #5E6173; --line: #DDE0EA;
+  --accent: #F2E35A; --on-accent: #252736; --brand: #5A3FA3; --brand-soft: #E9E3F8;
+  --ok: #2E7D4F; --ok-soft: #DDF1E4; --warn: #A24A14; --warn-soft: #FBE8D8; --on-color: #232434;
+  --font-display: "Zen Maru Gothic", "Hiragino Maru Gothic ProN", "Hiragino Sans", "Yu Gothic", sans-serif;
+  --font-body: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg: #14151C; --surface: #1D1F2A; --surface-2: #272A38; --ink: #EDEEF4; --ink-2: #A2A6BA; --line: #32364A;
+    --accent: #F2E35A; --on-accent: #1B1C25; --brand: #B8A5F2; --brand-soft: #2C2650;
+    --ok: #7BD39A; --ok-soft: #1E3326; --warn: #F0A674; --warn-soft: #3A2819;
+  }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.7;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-top: env(safe-area-inset-top, 0px); padding-bottom: 110px; -webkit-text-size-adjust: 100%;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); background: var(--bg); z-index: 10; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 700; line-height: 1.4; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--brand); outline-offset: 2px; }
+.shell { max-width: 480px; margin: 0 auto; }
+
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 9; background: var(--bg);
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0 10px; }
+.brand { font: 700 15px var(--font-display); letter-spacing: .02em; display: flex; align-items: center; gap: 8px; min-width: 0; }
+.dot { width: 14px; height: 14px; border-radius: 50%; background: var(--accent); box-shadow: inset 0 0 0 2px var(--ink); flex: none; }
+.who { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-2); min-width: 0; }
+.who b { color: var(--ink); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 9em; }
+
+.btn { appearance: none; border: 0; cursor: pointer; border-radius: 999px; padding: 12px 22px; min-height: 46px;
+  font: 700 15px var(--font-display); background: var(--accent); color: var(--on-accent); }
+.btn:hover { filter: brightness(.96); }
+.btn:active { transform: translateY(1px); }
+.btn.block { display: block; width: 100%; }
+.btn.quiet { background: var(--surface-2); color: var(--ink); }
+.btn.line { background: transparent; border: 1.5px solid var(--line); color: var(--ink); }
+.btn.sm { min-height: 36px; padding: 6px 14px; font-size: 13px; }
+.btn[disabled] { background: var(--surface-2); color: var(--ink-2); cursor: default; filter: none; transform: none; }
+.link { appearance: none; background: none; border: 0; padding: 4px 2px; color: var(--brand); cursor: pointer; font-size: 13px; text-decoration: underline; text-underline-offset: 3px; }
+
+.stack { display: flex; flex-direction: column; gap: 20px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 18px; }
+.eyebrow { font-size: 12px; letter-spacing: .08em; color: var(--ink-2); font-weight: 500; }
+.hello { font: 700 22px var(--font-display); }
+.muted { color: var(--ink-2); font-size: 13px; }
+.row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.chip { display: inline-block; font-size: 12px; font-weight: 700; padding: 2px 10px; border-radius: 999px; background: var(--surface-2); color: var(--ink-2); white-space: nowrap; }
+.chip.ok { background: var(--ok-soft); color: var(--ok); }
+.chip.warn { background: var(--warn-soft); color: var(--warn); }
+.chip.brand { background: var(--brand-soft); color: var(--brand); }
+.notice { font-size: 12.5px; color: var(--ink-2); border-top: 1px dashed var(--line); padding-top: 12px; }
+
+.stamps { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin: 14px 0 10px; }
+.stamp { aspect-ratio: 1; border-radius: 50%; border: 2px dashed var(--line); display: grid; place-items: center; font: 700 13px var(--font-display); color: var(--ink-2); }
+.stamp.on { background: var(--c); border: 2px solid var(--c); color: var(--on-color); }
+.stamp.big { border-style: solid; border-color: var(--ink-2); }
+.stamp.on.big { border-color: var(--ink); }
+.pts { font: 700 30px var(--font-display); font-variant-numeric: tabular-nums; }
+.pts small { font-size: 13px; font-weight: 500; color: var(--ink-2); margin-left: 4px; }
+.bar { height: 10px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--accent); border-radius: 999px; box-shadow: inset 0 0 0 1.5px var(--ink); }
+.date-big { font: 700 26px var(--font-display); font-variant-numeric: tabular-nums; }
+
+.rows { list-style: none; margin: 0; padding: 0; }
+.rows > li { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.rows > li:last-child { border-bottom: 0; }
+.rows .main { min-width: 0; flex: 1; }
+.rows .name { font-weight: 700; overflow-wrap: anywhere; }
+.rows .acts { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; flex: none; }
+.code { font-family: var(--font-mono); font-size: 13px; letter-spacing: .06em; color: var(--ink-2); }
+.sub { font-size: 12.5px; color: var(--ink-2); }
+
+.capsule-wrap { display: grid; place-items: center; padding: 8px 0 4px; }
+.capsule { width: 132px; height: 132px; }
+.capsule.shake { animation: shake .7s ease-in-out; transform-origin: 50% 90%; }
+@keyframes shake { 0%,100% { transform: rotate(0); } 15% { transform: rotate(-14deg); } 35% { transform: rotate(12deg); } 55% { transform: rotate(-10deg); } 75% { transform: rotate(8deg); } }
+.draw { background: var(--c); color: var(--on-color); border-radius: 22px; padding: 22px 20px 20px; }
+.draw.reveal { animation: pop .45s cubic-bezier(.2,.9,.3,1.2); }
+@keyframes pop { from { transform: scale(.88); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.draw .cname { font-size: 12px; font-weight: 700; letter-spacing: .1em; opacity: .75; }
+.draw .q { font: 700 24px/1.5 var(--font-display); margin: 6px 0 18px; text-wrap: balance; }
+.draw .btn { background: rgba(255,255,255,.7); color: var(--on-color); }
+.hist-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--c); flex: none; }
+
+.mission { align-items: flex-start; }
+.tick { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--line); flex: none; display: grid; place-items: center; margin-top: 2px; }
+.tick.on { background: var(--accent); border-color: var(--ink); }
+.tick svg { width: 14px; height: 14px; stroke: var(--on-accent); fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.tick:not(.on) svg { display: none; }
+
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; background: var(--surface-2); padding: 4px; border-radius: 999px; }
+.seg button { appearance: none; border: 0; background: transparent; border-radius: 999px; padding: 8px 4px; font: 700 13px var(--font-display); color: var(--ink-2); cursor: pointer; min-height: 38px; }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 0 0 1.5px var(--ink); }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label { font-size: 13px; font-weight: 500; }
+.input { width: 100%; background: var(--surface); border: 1.5px solid var(--line); border-radius: 12px; padding: 12px 14px; min-height: 48px; }
+.input:focus { border-color: var(--brand); outline: none; box-shadow: 0 0 0 3px var(--brand-soft); }
+.err { color: var(--warn); font-size: 13px; min-height: 1.4em; overflow-wrap: anywhere; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center; }
+.stats div { background: var(--surface-2); border-radius: 14px; padding: 10px 4px; }
+.stats b { display: block; font: 700 22px var(--font-display); font-variant-numeric: tabular-nums; }
+.stats span { font-size: 11.5px; color: var(--ink-2); }
+.loading { min-height: 60vh; display: grid; place-items: center; color: var(--ink-2); }
+
+.nav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 9; background: var(--surface); border-top: 1px solid var(--line);
+  padding: 6px max(8px, env(safe-area-inset-right, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px)); }
+.nav-in { max-width: 480px; margin: 0 auto; display: flex; }
+.nav button { flex: 1; appearance: none; border: 0; background: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 6px 0; min-height: 52px; color: var(--ink-2); font: 500 11px var(--font-body); border-radius: 12px; }
+.nav button svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.nav button[aria-current="page"] { color: var(--ink); font-weight: 700; }
+.nav button[aria-current="page"] span.ico { background: var(--accent); color: var(--on-accent); }
+.ico { display: grid; place-items: center; width: 46px; height: 28px; border-radius: 999px; }
+
+#toast { position: fixed; left: 50%; bottom: calc(88px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 12px); z-index: 20;
+  background: var(--ink); color: var(--bg); padding: 10px 18px; border-radius: 999px; font-size: 14px; opacity: 0; pointer-events: none;
+  transition: opacity .2s, transform .2s; max-width: calc(100vw - 32px); text-align: center; }
+#toast.show { opacity: 1; transform: translate(-50%, 0); }
+@media (prefers-reduced-motion: reduce) { .capsule.shake, .draw.reveal { animation: none; } #toast { transition: none; } }
+</style>
+</head>
+<body>
+<div class="shell"><div id="app"><div class="loading">読み込み中…</div></div></div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInAnonymously, GoogleAuthProvider, signInWithPopup, signOut }
+  from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import { getFirestore, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, collection, onSnapshot, writeBatch, query, orderBy }
+  from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBWKKViiqUyil2VR-hO9YwWCZdggSOv_w0",
+  authDomain: "kashikosnsschool.firebaseapp.com",
+  projectId: "kashikosnsschool",
+  storageBucket: "kashikosnsschool.firebasestorage.app",
+  messagingSenderId: "302383194309",
+  appId: "1:302383194309:web:ec415617ea25bff78510ac"
+};
+const ADMIN_EMAIL = "kashiko.pr@gmail.com";   // 管理画面を開けるGoogleアカウント（本当の制限はFirestoreのルール側）
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const memRef = (code) => doc(db, "members", code);
+
+const WD = "日月火水木金土";
+const LS = "kashiko-school-code";
+const PAL = [
+  { n: "空色", c: "#8FD3F4" }, { n: "山吹", c: "#F6C945" }, { n: "桜", c: "#F28B9B" }, { n: "若草", c: "#A8DC8A" },
+  { n: "蜜柑", c: "#F8A857" }, { n: "藤", c: "#BFA7F0" }, { n: "青磁", c: "#8FDCC8" }, { n: "茜", c: "#EE7F6B" },
+  { n: "瑠璃", c: "#8CA0F2" }, { n: "檸檬", c: "#F2E35A" }
+];
+const STAMP = ["#F28B9B", "#F8A857", "#F2E35A", "#A8DC8A", "#8FD3F4", "#8CA0F2", "#BFA7F0"];
+const TOPIC_TEXTS = ["今日の気持ちは何色？", "今日の一番よかったこと", "この仕事を選んだ理由", "これからやりたいこと", "一番幸せだったできごと",
+  "好きな色について", "いま気になってる色", "断言できること", "ゆずれないこと", "得意なこと"];
+const DEFAULT_TOPICS = TOPIC_TEXTS.map((t, i) => ({ id: "t" + (i + 1), text: t, color: PAL[i].c, cname: PAL[i].n, order: i + 1 }));
+const MISSIONS = [
+  { id: "pwa", title: "ホーム画面にこのアプリを追加する", hint: "iPhone：共有ボタン →「ホーム画面に追加」／Android：メニュー →「ホーム画面に追加」。できたら「やった」を押してください", self: true },
+  { id: "gacha", title: "ネタガチャを1回まわす", auto: (m) => m.gachaCount >= 1 },
+  { id: "login3", title: "ログインボーナスを3日分受け取る", auto: (m) => m.bonusDays.length >= 3 },
+  { id: "post", title: "ガチャのネタで発信してみる", hint: "投稿できたら「やった」を押してください", self: true },
+  { id: "attend", title: "グルコンに出席する", auto: (m) => m.attendance.length >= 1 }
+];
+const ICON = {
+  home: '<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  att: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18M9 15l2 2 4-4"/>',
+  gacha: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><circle cx="12" cy="12" r="2.5"/>',
+  mission: '<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>'
+};
+
+/* ---------- 日付 ---------- */
+const pad = (n) => (n < 10 ? "0" : "") + n;
+const ymd = (d) => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+const P = (s) => { const a = s.split("-").map(Number); return new Date(a[0], a[1] - 1, a[2]); };
+const addDays = (s, n) => { const a = s.split("-").map(Number); return ymd(new Date(a[0], a[1] - 1, a[2] + n)); };
+const diff = (a, b) => Math.round((P(b) - P(a)) / 864e5);
+const lab = (s) => { const d = P(s); return (d.getMonth() + 1) + "月" + d.getDate() + "日（" + WD[d.getDay()] + "）"; };
+function today() { return ymd(new Date()); }
+function gurukon(y, m) {
+  const w = [];
+  for (let d = 1; d <= 31; d++) { const dt = new Date(y, m, d); if (dt.getMonth() !== m) break; if (dt.getDay() === 3) w.push(ymd(dt)); }
+  return [w[0], w[2]];
+}
+function eventsAround(t) {
+  const a = t.split("-").map(Number); let out = [];
+  for (let k = -3; k <= 3; k++) { const dt = new Date(a[0], a[1] - 1 + k, 1); out = out.concat(gurukon(dt.getFullYear(), dt.getMonth())); }
+  return out.sort();
+}
+
+/* ---------- 共通 ---------- */
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const svg = (k) => '<svg viewBox="0 0 24 24" aria-hidden="true">' + ICON[k] + "</svg>";
+function lsGet() { try { return localStorage.getItem(LS) || ""; } catch (e) { return ""; } }
+function lsSet(v) { try { if (v) localStorage.setItem(LS, v); else localStorage.removeItem(LS); } catch (e) { /* 保存できない端末では毎回入力になる */ } }
+let toastTimer;
+function toast(msg) { const el = document.getElementById("toast"); el.textContent = msg; el.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove("show"), 2600); }
+function copyText(t) {
+  const fail = () => toast("コピーできませんでした。文字を長押ししてコピーしてください");
+  try { navigator.clipboard.writeText(t).then(() => toast("コピーしました"), fail); } catch (e) { fail(); }
+}
+function errMsg(e) {
+  const c = (e && e.code) || "";
+  if (c === "auth/operation-not-allowed") return "ログイン方式がオンになっていません。Firebaseの Authentication で「匿名」と「Google」を有効にしてください。";
+  if (c === "auth/popup-closed-by-user" || c === "auth/cancelled-popup-request") return "ログインが途中で閉じられました。";
+  if (c === "auth/unauthorized-domain") return "このサイトのアドレスが、Firebaseの「承認済みドメイン」に入っていません。";
+  if (c === "permission-denied" || c === "firestore/permission-denied") return "権限がなくて読み書きできませんでした。Firestoreのルールを確認してください。";
+  if (c === "unavailable" || c === "auth/network-request-failed") return "通信できませんでした。電波のよいところで、もう一度ためしてください。";
+  return "うまくいきませんでした（" + (c || (e && e.message) || "不明") + "）";
+}
+function norm(code, d) {
+  return {
+    code, nickname: d.nickname || "", active: d.active !== false, bonusPts: d.bonusPts || 0, streak: d.streak || 0,
+    lastBonus: d.lastBonus || "", bonusDays: d.bonusDays || [], lastLogin: d.lastLogin || "", attendance: d.attendance || [],
+    missions: Object.assign({ pwa: false, post: false }, d.missions || {}), gachaCount: d.gachaCount || 0, gachaLog: d.gachaLog || [],
+    reward: d.reward || "none", createdAt: d.createdAt || 0
+  };
+}
+const normCode = (s) => String(s || "").normalize("NFKC").replace(/\s+/g, "").toUpperCase();
+const byOrder = (a, b) => (a.order || 0) - (b.order || 0);
+
+/* ---------- 状態 ---------- */
+let ME = null, IS_ADMIN = false, MEMBERS = [], TOPICS = [];
+let booting = true, busy = false, bootSeq = 0, unsubM = null, unsubT = null;
+let view = "home", adm = "members", admEvent = null, rolling = false, reveal = false, lastDraw = null, loginErr = "", pendingDel = null, newCode = null;
+const topicList = () => (TOPICS.length ? TOPICS : DEFAULT_TOPICS);
+const topicById = (id) => topicList().find((x) => x.id === id) || null;
+const isDone = (m, ms) => (ms.self ? !!m.missions[ms.id] : ms.auto(m));
+const doneCount = (m) => MISSIONS.filter((x) => isDone(m, x)).length;
+const points = (m) => m.bonusPts + 20 * doneCount(m) + 30 * m.attendance.length;
+function stampPos(m) {
+  const t = today();
+  if (m.lastBonus === t) return ((m.streak - 1) % 7) + 1;
+  if (m.lastBonus === addDays(t, -1)) return m.streak % 7;
+  return 0;
+}
+
+/* ---------- 画面（受講生） ---------- */
+function vLogin() {
+  return '<div class="stack" style="padding-top:28px">' +
+    '<div><div class="brand"><span class="dot"></span>かしこSNSスクール</div><h1 class="hello" style="margin-top:14px">おかえりなさい。<br>招待コードを入れてください。</h1></div>' +
+    '<form class="stack" data-form="login" style="gap:14px" novalidate>' +
+    '<div class="field"><label for="code">招待コード</label><input class="input" id="code" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="KSK-XXXXXX"></div>' +
+    '<div class="field"><label for="nick">ニックネーム（初めてのときだけ）</label><input class="input" id="nick" autocomplete="off" maxlength="12" placeholder="例：ひな"></div>' +
+    '<div class="err" id="err" role="alert">' + esc(loginErr) + "</div>" +
+    '<button class="btn block" type="submit"' + (busy ? " disabled" : "") + ">" + (busy ? "確認しています…" : "ログイン") + "</button></form>" +
+    '<p class="notice">招待コードは、れもんさんからお知らせしています。わからないときは、スクールでお気軽に聞いてくださいね。</p>' +
+    '<div><button class="link" data-act="admin-login">管理者の方はこちら</button></div></div>';
+}
+
+function vHome(m) {
+  const t = today(), pos = stampPos(m), claimed = m.lastBonus === t, future = m.lastBonus && m.lastBonus > t;
+  const stamps = STAMP.map((c, i) => '<div class="stamp' + (i < pos ? " on" : "") + (i === 6 ? " big" : "") + '" style="--c:' + c + '">' + (i + 1) + "</div>").join("");
+  const gain = pos === 6 && !claimed ? 60 : 10;
+  const btn = claimed || future ? '<button class="btn block" disabled>今日はもう受け取りました。また明日ね</button>'
+    : '<button class="btn block" data-act="claim">今日のボーナスを受け取る（+' + gain + "pt）</button>";
+  const ev = eventsAround(t).filter((e) => e >= t)[0], dd = diff(t, ev), att = m.attendance.indexOf(ev) >= 0;
+  const evBtn = dd === 0 ? (att ? '<span class="chip ok">出席済み</span>' : '<button class="btn sm" data-act="checkin">出席する</button>') : '<span class="chip">あと' + dd + "日</span>";
+  const dc = doneCount(m), total = MISSIONS.length;
+  return '<div class="stack"><div><p class="eyebrow">' + lab(t) + '</p><h1 class="hello">' + esc(m.nickname) + "さん、こんにちは</h1></div>" +
+    '<section class="card"><div class="row"><div><p class="eyebrow">ログインスタンプ</p><p class="muted">連続 ' + (pos === 0 && !claimed ? 0 : m.streak) + '日目</p></div><div class="pts">' + points(m) + "<small>pt</small></div></div>" +
+    '<div class="stamps" role="img" aria-label="7日分のスタンプ、' + pos + 'こ集まっています">' + stamps + '</div><p class="muted" style="margin-bottom:14px">7日そろうと、7日目に +50pt。</p>' + btn + "</section>" +
+    '<section class="card"><div class="row"><div><p class="eyebrow">次のグルコン</p><p class="date-big">' + lab(ev) + '</p><p class="muted">9:00〜11:00 · Google Meet</p></div>' + evBtn + "</div></section>" +
+    '<section class="card"><div class="row"><div><p class="eyebrow">はじめてのミッション</p><p style="font-weight:700">' + dc + " / " + total + ' クリア</p></div><button class="btn sm quiet" data-act="tab" data-v="mission">見る</button></div>' +
+    '<div class="bar" style="margin:12px 0 8px"><i style="width:' + (dc / total * 100) + '%"></i></div><p class="muted">全部できたら、個別相談を1回プレゼント。</p></section></div>';
+}
+
+function vAttend(m) {
+  const t = today(), evs = eventsAround(t), up = evs.filter((e) => e >= t).slice(0, 3), past = evs.filter((e) => e < t).slice(-4).reverse();
+  const row = (e, isPast) => {
+    const att = m.attendance.indexOf(e) >= 0; let right;
+    if (att) right = '<span class="chip ok">出席済み</span>';
+    else if (e === t) right = '<button class="btn sm" data-act="checkin">出席する</button>';
+    else if (isPast) right = '<span class="chip">お休み</span>';
+    else right = '<span class="chip">' + diff(t, e) + "日後</span>";
+    return '<li><div class="main"><p class="name">' + lab(e) + '</p><p class="sub">9:00〜11:00</p></div>' + right + "</li>";
+  };
+  return '<div class="stack"><div><p class="eyebrow">グルコン</p><h1 class="hello">出席確認</h1><p class="muted">毎月 第1・第3水曜 9:00〜11:00。開催日の当日に、ボタンが押せます。</p></div>' +
+    '<section><h2 style="font-size:16px">これから</h2><ul class="rows">' + up.map((e) => row(e, false)).join("") + "</ul></section>" +
+    '<section><h2 style="font-size:16px">これまで</h2><ul class="rows">' + past.map((e) => row(e, true)).join("") + "</ul></section>" +
+    '<p class="muted">出席は ' + m.attendance.length + "回。来られなかった日は、アーカイブや質問でゆっくり追いつけます。</p></div>";
+}
+
+function vGacha(m) {
+  const cap = '<svg class="capsule' + (rolling ? " shake" : "") + '" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="48" fill="var(--surface)" stroke="var(--ink)" stroke-width="3"/>' +
+    '<path d="M12 60A48 48 0 0 1 108 60Z" fill="var(--accent)" stroke="var(--ink)" stroke-width="3" stroke-linejoin="round"/><circle cx="60" cy="60" r="9" fill="var(--surface)" stroke="var(--ink)" stroke-width="3"/></svg>';
+  const cur = lastDraw && topicById(lastDraw); let result = "";
+  if (cur && !rolling) {
+    result = '<article class="draw' + (reveal ? " reveal" : "") + '" style="--c:' + cur.color + '"><p class="cname">' + esc(cur.cname || "") + '</p><p class="q">' + esc(cur.text) + "</p>" +
+      '<div class="row" style="justify-content:flex-start;gap:8px;flex-wrap:wrap"><button class="btn sm" data-act="copy-draw">コピーする</button></div></article>';
+  }
+  const hist = (cur ? m.gachaLog.slice(-6, -1) : m.gachaLog.slice(-5)).reverse().map(topicById).filter(Boolean);
+  return '<div class="stack"><div><p class="eyebrow">発信ネタガチャ</p><h1 class="hello">今日は何を話そう？</h1><p class="muted">迷ったら回して、出たお題で一言だけ。</p></div>' +
+    '<div class="capsule-wrap">' + cap + "</div>" +
+    '<button class="btn block" data-act="spin"' + (rolling ? " disabled" : "") + ">" + (rolling ? "ガチャガチャ…" : (cur ? "もう一回まわす" : "ガチャをまわす")) + "</button>" + result +
+    (hist.length ? '<section><h2 style="font-size:15px">さっき出たお題</h2><ul class="rows">' + hist.map((t) => '<li><span class="hist-dot" style="--c:' + t.color + '"></span><span class="main">' + esc(t.text) + "</span></li>").join("") + "</ul></section>" : "") +
+    '<p class="muted">これまでに ' + m.gachaCount + "回まわしました。</p></div>";
+}
+
+function vMission(m) {
+  const dc = doneCount(m), all = dc === MISSIONS.length;
+  const list = MISSIONS.map((ms) => {
+    const d = isDone(m, ms); let right = "";
+    if (ms.self && !d) right = '<button class="btn sm quiet" data-act="mission" data-id="' + ms.id + '">やった</button>';
+    const hint = ms.hint ? '<p class="sub">' + ms.hint + "</p>" : (ms.auto && !d ? '<p class="sub">自動でチェックされます</p>' : "");
+    return '<li class="mission"><span class="tick' + (d ? " on" : "") + '"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><div class="main"><p class="name">' + ms.title + "</p>" + hint + "</div>" + right + "</li>";
+  }).join("");
+  let rew;
+  if (m.reward === "requested") rew = '<span class="chip brand">申し込み済み</span><p class="muted" style="margin-top:8px">れもんさんから、日程のご案内があります。</p>';
+  else if (m.reward === "done") rew = '<span class="chip ok">対応済み</span>';
+  else if (all) rew = '<button class="btn block" data-act="reward">個別相談を申し込む</button>';
+  else rew = '<p class="muted">あと ' + (MISSIONS.length - dc) + "こで、受け取れます。</p>";
+  return '<div class="stack"><div><p class="eyebrow">はじめてのミッション</p><h1 class="hello">ひとつずつ、できたらOK</h1></div>' +
+    '<div class="bar"><i style="width:' + (dc / MISSIONS.length * 100) + '%"></i></div><ul class="rows">' + list + "</ul>" +
+    '<section class="card"><p class="eyebrow">クリア特典</p><p class="date-big" style="font-size:22px;margin-bottom:10px">個別相談 1回</p>' + rew + "</section></div>";
+}
+
+/* ---------- 画面（管理者） ---------- */
+function inviteText(code) {
+  const url = new URL("./", location.href).href;
+  return "かしこSNSスクールのアプリです。\n" + url + "\n招待コード：" + code + "\n（初めてのときは、ニックネームも入れてくださいね）";
+}
+function vAdmin() {
+  const t = today();
+  const seg = '<div class="seg" role="group" aria-label="管理メニュー">' +
+    [["members", "メンバー"], ["att", "出席"], ["topics", "ネタ帳"]].map((x) => '<button data-act="adm" data-v="' + x[0] + '" aria-pressed="' + (adm === x[0]) + '">' + x[1] + "</button>").join("") + "</div>";
+  let body = "";
+  const reg = MEMBERS.filter((x) => x.nickname);
+  if (adm === "members") {
+    const todayN = reg.filter((x) => x.lastLogin === t).length, req = MEMBERS.filter((x) => x.reward === "requested");
+    body += '<div class="stats"><div><b>' + reg.length + "</b><span>登録メンバー</span></div><div><b>" + todayN + "</b><span>今日ログイン</span></div><div><b>" + (MEMBERS.length - reg.length) + "</b><span>未使用コード</span></div></div>";
+    if (req.length) body += '<section class="card"><p class="eyebrow">個別相談の申し込み</p><ul class="rows">' + req.map((x) => '<li><span class="name">' + esc(x.nickname) + 'さん</span><button class="btn sm" data-act="reward-done" data-code="' + x.code + '">対応済みにする</button></li>').join("") + "</ul></section>";
+    body += '<section class="card" style="display:flex;flex-direction:column;gap:10px"><div class="row"><b style="font-family:var(--font-display)">新しい招待コード</b><button class="btn sm" data-act="new-code"' + (busy ? " disabled" : "") + ">発行する</button></div>" +
+      (newCode ? '<div class="row"><span class="code" style="font-size:18px;color:var(--ink)">' + newCode + '</span><button class="btn sm quiet" data-act="copy-invite" data-code="' + newCode + '">案内文をコピー</button></div><p class="muted">コピーした案内文を、受講生に送ってください。最初のログインでニックネームが決まります。</p>' : '<p class="muted">受講生ひとりにつき、1コードです。</p>') + "</section>";
+    body += MEMBERS.length ? '<ul class="rows">' + MEMBERS.map((x) => {
+      const nm = x.nickname ? esc(x.nickname) : '<span class="muted">（まだ使われていません）</span>';
+      const last = x.lastLogin ? (x.lastLogin === t ? "今日" : lab(x.lastLogin).replace(/（.）/, "")) : "—";
+      return '<li><div class="main"><p class="name">' + nm + (x.active ? "" : ' <span class="chip warn">停止中</span>') + '</p><p class="code">' + x.code + "</p>" +
+        '<p class="sub">出席 ' + x.attendance.length + "回 · " + points(x) + "pt · 最終 " + last + "</p></div>" +
+        '<div class="acts"><button class="btn sm ' + (x.active ? "line" : "quiet") + '" data-act="toggle" data-code="' + x.code + '">' + (x.active ? "停止" : "再開") + "</button>" +
+        (x.nickname ? "" : '<button class="link" data-act="copy-invite" data-code="' + x.code + '">案内文をコピー</button>') +
+        '<button class="link" data-act="del-member" data-code="' + x.code + '">' + (pendingDel === x.code ? "本当に削除" : "削除") + "</button></div></li>";
+    }).join("") + "</ul>" : '<p class="muted">まだコードがありません。上の「発行する」から作れます。</p>';
+  } else if (adm === "att") {
+    const evs = eventsAround(t), opts = evs.filter((e) => e < t).slice(-5).concat(evs.filter((e) => e >= t).slice(0, 2));
+    if (!admEvent || opts.indexOf(admEvent) < 0) { const pastOnly = opts.filter((e) => e <= t); admEvent = pastOnly.length ? pastOnly[pastOnly.length - 1] : opts[0]; }
+    const regs = reg.filter((x) => x.active), n = regs.filter((x) => x.attendance.indexOf(admEvent) >= 0).length;
+    body += '<div class="field"><label for="evsel">開催日</label><select class="input" id="evsel" data-change="event">' + opts.map((e) => '<option value="' + e + '"' + (e === admEvent ? " selected" : "") + ">" + lab(e) + "</option>").join("") + "</select></div>" +
+      '<div class="row"><b style="font-family:var(--font-display);font-size:18px">出席 ' + n + " / " + regs.length + '名</b><span class="muted">押し忘れも、ここで直せます</span></div>' +
+      (regs.length ? '<ul class="rows">' + regs.map((x) => {
+        const on = x.attendance.indexOf(admEvent) >= 0;
+        return '<li><span class="name">' + esc(x.nickname) + '</span><button class="btn sm ' + (on ? "" : "quiet") + '" data-act="mark" data-code="' + x.code + '" aria-pressed="' + on + '">' + (on ? "出席" : "未出席") + "</button></li>";
+      }).join("") + "</ul>" : '<p class="muted">登録済みのメンバーがまだいません。</p>');
+  } else {
+    if (!TOPICS.length) {
+      body += '<p class="muted">いまは、最初の10個のお題が使われています。足したり消したりするには、先に登録してください。</p>' +
+        '<button class="btn block" data-act="seed-topics"' + (busy ? " disabled" : "") + ">最初のお題10個を登録する</button>" +
+        '<ul class="rows">' + DEFAULT_TOPICS.map((x) => '<li><span class="hist-dot" style="--c:' + x.color + '"></span><span class="main">' + esc(x.text) + "</span></li>").join("") + "</ul>";
+    } else {
+      body += '<p class="muted">ガチャに入るお題です（' + TOPICS.length + '個）。</p>' +
+        '<form class="row" data-form="topic" style="align-items:stretch" novalidate><input class="input" id="newTopic" maxlength="40" placeholder="新しいお題" aria-label="新しいお題"><button class="btn" type="submit" style="flex:none">追加</button></form>' +
+        '<ul class="rows">' + TOPICS.map((x) => '<li><span class="hist-dot" style="--c:' + x.color + '"></span><span class="main">' + esc(x.text) + '</span><button class="btn sm ' + (pendingDel === x.id ? "" : "line") + '" data-act="del-topic" data-id="' + x.id + '">' + (pendingDel === x.id ? "本当に消す" : "消す") + "</button></li>").join("") + "</ul>";
+    }
+  }
+  return '<div class="stack"><div><p class="eyebrow">管理者用</p><h1 class="hello">スクールの管理</h1></div>' + seg + body + "</div>";
+}
+
+function render() {
+  const root = document.getElementById("app");
+  if (booting) { root.innerHTML = '<div class="loading">読み込み中…</div>'; return; }
+  if (IS_ADMIN) {
+    root.innerHTML = '<header class="top"><div class="brand"><span class="dot"></span>かしこSNSスクール</div><div class="who"><span class="chip brand">管理者</span><button class="link" data-act="logout">ログアウト</button></div></header><main>' + vAdmin() + "</main>";
+    return;
+  }
+  const m = ME;
+  if (!m) { root.innerHTML = vLogin(); return; }
+  const body = view === "home" ? vHome(m) : view === "att" ? vAttend(m) : view === "gacha" ? vGacha(m) : vMission(m);
+  const tabs = [["home", "ホーム"], ["att", "出席"], ["gacha", "ガチャ"], ["mission", "ミッション"]];
+  root.innerHTML = '<header class="top"><div class="brand"><span class="dot"></span>かしこSNSスクール</div><div class="who"><b>' + esc(m.nickname) + '</b><button class="link" data-act="logout">ログアウト</button></div></header><main>' + body + "</main>" +
+    '<nav class="nav" aria-label="メニュー"><div class="nav-in">' + tabs.map((x) => '<button data-act="tab" data-v="' + x[0] + '"' + (view === x[0] ? ' aria-current="page"' : "") + '><span class="ico">' + svg(x[0]) + "</span>" + x[1] + "</button>").join("") + "</div></nav>";
+}
+
+/* ---------- データ ---------- */
+async function loadTopics() {
+  try { const s = await getDocs(collection(db, "topics")); TOPICS = s.docs.map((d) => Object.assign({ id: d.id }, d.data())).sort(byOrder); }
+  catch (e) { TOPICS = []; }
+}
+async function patch(fields) {
+  if (!ME) return false;
+  Object.assign(ME, fields);
+  try { await updateDoc(memRef(ME.code), fields); return true; }
+  catch (e) { console.error(e); toast("保存できませんでした。通信を確認して、もう一度ためしてください"); return false; }
+}
+function stopAdmin() { if (unsubM) unsubM(); if (unsubT) unsubT(); unsubM = unsubT = null; MEMBERS = []; }
+function startAdmin() {
+  stopAdmin(); IS_ADMIN = true; ME = null;
+  unsubM = onSnapshot(query(collection(db, "members"), orderBy("createdAt", "desc")),
+    (s) => { MEMBERS = s.docs.map((d) => norm(d.id, d.data())); render(); }, (e) => { console.error(e); toast(errMsg(e)); });
+  unsubT = onSnapshot(collection(db, "topics"),
+    (s) => { TOPICS = s.docs.map((d) => Object.assign({ id: d.id }, d.data())).sort(byOrder); render(); }, (e) => { console.error(e); });
+}
+async function startMember(code) {
+  const snap = await getDoc(memRef(code));
+  if (!snap.exists()) { const e = new Error("nocode"); e.code = "nocode"; throw e; }
+  const m = norm(code, snap.data());
+  if (!m.active) { const e = new Error("inactive"); e.code = "inactive"; throw e; }
+  ME = m; IS_ADMIN = false; stopAdmin();
+  if (m.lastLogin !== today()) { try { await updateDoc(memRef(code), { lastLogin: today() }); ME.lastLogin = today(); } catch (e) { console.error(e); } }
+  await loadTopics();
+}
+async function boot(user) {
+  const seq = ++bootSeq;
+  try {
+    if (user && !user.isAnonymous) {
+      if ((user.email || "").toLowerCase() === ADMIN_EMAIL) { startAdmin(); }
+      else { await signOut(auth); loginErr = "このGoogleアカウントは、管理者として登録されていません。"; ME = null; IS_ADMIN = false; }
+    } else {
+      const code = lsGet();
+      if (!user && code) { await signInAnonymously(auth); return; }   // 続きは onAuthStateChanged で
+      if (user && code && !ME) await startMember(code);
+      if (!code) { ME = null; IS_ADMIN = false; }
+    }
+  } catch (e) {
+    if (e && (e.code === "nocode" || e.code === "inactive")) { lsSet(""); loginErr = e.code === "inactive" ? "このコードは、いまお休み中です。" : "このコードは見つかりません。"; }
+    else { loginErr = errMsg(e); }
+    ME = null;
+  }
+  if (seq !== bootSeq) return;
+  booting = false; render();
+}
+onAuthStateChanged(auth, (user) => { if (busy) return; boot(user); });
+
+/* ---------- 操作 ---------- */
+function genCode() {
+  const ch = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; let c = "KSK-";
+  for (let i = 0; i < 6; i++) c += ch[Math.floor(Math.random() * ch.length)];
+  return c;
+}
+function pick() {
+  let pool = topicList().filter((x) => x.id !== lastDraw);
+  if (!pool.length) pool = topicList();
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+async function doLogin(codeRaw, nick) {
+  const code = normCode(codeRaw);
+  if (!code) { loginErr = "招待コードを入れてください。"; return render(); }
+  busy = true; loginErr = ""; render();
+  try {
+    if (!auth.currentUser) await signInAnonymously(auth);
+    const snap = await getDoc(memRef(code));
+    if (!snap.exists()) { loginErr = "このコードは見つかりません。れもんさんに確認してください。"; return; }
+    const m = norm(code, snap.data());
+    if (!m.active) { loginErr = "このコードは、いまお休み中です。"; return; }
+    const fields = { lastLogin: today() };
+    if (!m.nickname) { if (!nick) { loginErr = "はじめての方は、ニックネームも入れてください。"; return; } fields.nickname = nick; }
+    await updateDoc(memRef(code), fields);
+    ME = Object.assign(m, fields); IS_ADMIN = false; lsSet(code);
+    await loadTopics(); view = "home"; loginErr = "";
+    toast(ME.nickname + "さん、ようこそ");
+  } catch (e) { console.error(e); loginErr = errMsg(e); }
+  finally { busy = false; booting = false; render(); }
+}
+
+const A = {
+  logout: async () => { lsSet(""); ME = null; IS_ADMIN = false; stopAdmin(); view = "home"; loginErr = ""; try { await signOut(auth); } catch (e) { /* そのまま */ } booting = false; render(); },
+  "admin-login": async () => {
+    loginErr = "";
+    try { await signInWithPopup(auth, new GoogleAuthProvider()); }
+    catch (e) { console.error(e); loginErr = errMsg(e); render(); }
+  },
+  tab: (el) => { view = el.dataset.v; reveal = false; render(); window.scrollTo(0, 0); },
+  claim: async () => {
+    const m = ME, t = today();
+    if (!m || (m.lastBonus && m.lastBonus >= t)) return;
+    const streak = m.lastBonus === addDays(t, -1) ? m.streak + 1 : 1, gain = 10 + (streak % 7 === 0 ? 50 : 0);
+    const ok = await patch({ streak, bonusPts: m.bonusPts + gain, lastBonus: t, bonusDays: m.bonusDays.concat([t]) });
+    render(); if (ok) toast("+" + gain + "pt もらいました");
+  },
+  checkin: async () => {
+    const m = ME, t = today();
+    if (!m) return;
+    if (eventsAround(t).indexOf(t) < 0) { toast("今日はグルコンの日ではありません"); return; }
+    if (m.attendance.indexOf(t) >= 0) return;
+    const ok = await patch({ attendance: m.attendance.concat([t]) });
+    render(); if (ok) toast("出席を記録しました。おつかれさまです");
+  },
+  spin: () => {
+    if (rolling || !ME) return;
+    rolling = true; reveal = false; render();
+    setTimeout(async () => {
+      const t = pick(); rolling = false; lastDraw = t.id; reveal = true;
+      await patch({ gachaCount: ME.gachaCount + 1, gachaLog: ME.gachaLog.concat([t.id]).slice(-30) });
+      render();
+    }, 700);
+  },
+  "copy-draw": () => { const t = lastDraw && topicById(lastDraw); if (t) copyText(t.text); },
+  mission: async (el) => { if (!ME) return; const ok = await patch({ missions: Object.assign({}, ME.missions, { [el.dataset.id]: true }) }); render(); if (ok) toast("ナイスです"); },
+  reward: async () => { if (!ME) return; const ok = await patch({ reward: "requested" }); render(); if (ok) toast("申し込みました"); },
+
+  adm: (el) => { adm = el.dataset.v; pendingDel = null; render(); },
+  "new-code": async () => {
+    busy = true; render();
+    try {
+      let c, tries = 0;
+      do { c = genCode(); tries++; } while ((await getDoc(memRef(c))).exists() && tries < 5);
+      await setDoc(memRef(c), { nickname: "", active: true, bonusPts: 0, streak: 0, lastBonus: "", bonusDays: [], lastLogin: "", attendance: [], missions: { pwa: false, post: false }, gachaCount: 0, gachaLog: [], reward: "none", createdAt: Date.now() });
+      newCode = c;
+    } catch (e) { console.error(e); toast(errMsg(e)); }
+    busy = false; render();
+  },
+  "copy-invite": (el) => copyText(inviteText(el.dataset.code)),
+  toggle: async (el) => { const x = MEMBERS.find((m) => m.code === el.dataset.code); if (x) try { await updateDoc(memRef(x.code), { active: !x.active }); } catch (e) { toast(errMsg(e)); } },
+  "reward-done": async (el) => { try { await updateDoc(memRef(el.dataset.code), { reward: "done" }); toast("対応済みにしました"); } catch (e) { toast(errMsg(e)); } },
+  "del-member": async (el) => {
+    const c = el.dataset.code;
+    if (pendingDel !== c) { pendingDel = c; render(); return; }
+    pendingDel = null;
+    try { await deleteDoc(memRef(c)); toast("削除しました"); } catch (e) { toast(errMsg(e)); render(); }
+  },
+  mark: async (el) => {
+    const x = MEMBERS.find((m) => m.code === el.dataset.code); if (!x) return;
+    const on = x.attendance.indexOf(admEvent) >= 0, next = on ? x.attendance.filter((d) => d !== admEvent) : x.attendance.concat([admEvent]);
+    try { await updateDoc(memRef(x.code), { attendance: next }); } catch (e) { toast(errMsg(e)); }
+  },
+  "seed-topics": async () => {
+    busy = true; render();
+    try { const b = writeBatch(db); DEFAULT_TOPICS.forEach((t) => b.set(doc(db, "topics", t.id), { text: t.text, color: t.color, cname: t.cname, order: t.order })); await b.commit(); toast("登録しました"); }
+    catch (e) { console.error(e); toast(errMsg(e)); }
+    busy = false; render();
+  },
+  "del-topic": async (el) => {
+    const id = el.dataset.id;
+    if (pendingDel !== id) { pendingDel = id; render(); return; }
+    pendingDel = null;
+    try { await deleteDoc(doc(db, "topics", id)); } catch (e) { toast(errMsg(e)); render(); }
+  }
+};
+document.addEventListener("click", (e) => { const el = e.target.closest("[data-act]"); if (el && A[el.dataset.act]) A[el.dataset.act](el); });
+document.addEventListener("change", (e) => { const el = e.target.closest("[data-change]"); if (el && el.dataset.change === "event") { admEvent = el.value; render(); } });
+document.addEventListener("submit", async (e) => {
+  const f = e.target.closest("[data-form]"); if (!f) return;
+  e.preventDefault();
+  if (f.dataset.form === "login") { if (busy) return; doLogin(document.getElementById("code").value, document.getElementById("nick").value.trim()); }
+  if (f.dataset.form === "topic") {
+    const inp = document.getElementById("newTopic"), v = inp.value.trim(); if (!v) return;
+    const n = TOPICS.length, p = PAL[n % PAL.length];
+    try { await setDoc(doc(db, "topics", "t" + Date.now()), { text: v, color: p.c, cname: p.n, order: Date.now() }); toast("お題を足しました"); }
+    catch (err) { console.error(err); toast(errMsg(err)); }
+  }
+});
+
+if ("serviceWorker" in navigator) { window.addEventListener("load", () => { navigator.serviceWorker.register("./sw.js").catch(() => {}); }); }
+</script>
+</body>
+</html>
